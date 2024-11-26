@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 import './App.css';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginForm from './LoginForm'
+import HomepageBody from './HomepageBody';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -26,9 +27,13 @@ function App() {
 		setUser(user);
 	}
 
-  function logoutGoogle () {
-		auth.signOut();
-		setUser(null)
+  async function logoutGoogle () {
+		try {
+      await auth.signOut();
+      setUser(null)
+    } catch (error) {
+      console.error(error);
+    }
 	}
 	
   return (
@@ -37,11 +42,12 @@ function App() {
         <div className="homepage">
           <div className="nav">
             <div>Welcome {user.displayName}</div>
-            <div className="logout-button">
-              <LogoutIcon onClick={logoutGoogle} />
+            <div className="logout-button" onClick={logoutGoogle}>
+              <LogoutIcon />
               Logout
             </div>
           </div>
+          <HomepageBody user={user} />
         </div>:
         <LoginForm LoginEvent={HandleLogin} auth={auth} />
       }
