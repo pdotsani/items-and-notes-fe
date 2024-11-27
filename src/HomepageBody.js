@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import body from './config';
 
+import './homepage.css';
+
 const BASE_URL = 'https://notes-and-items-api.uc.r.appspot.com';
 
 function HomepageBody({ user }) {
@@ -52,7 +54,7 @@ function HomepageBody({ user }) {
 
   return (
     <div>
-      <form>
+      <form className='items-form'>
         <label>
           Body Part
           <select name="bodyPart" onChange={(e) => setBodyPart(e.target.value)}>
@@ -81,33 +83,37 @@ function HomepageBody({ user }) {
         </label>}
         {bodyPart && muscles && <label>
           memo
-          <input type="text" name="memo" onChange={(e) => setMemo(e.target.value)} />
+          <textarea name="memo" onChange={(e) => setMemo(e.target.value)} />
         </label>}
       </form>
-      <button onClick={handleAddItem}>Add Item</button>
-      {items.length > 0 && <button onClick={handleSummarizeItems} disabled={loading}>Summarize Items</button>}
-      <button onClick={handleClearItems}>Clear Items</button>
+      <div className="button-container">
+        <button className="button" onClick={handleAddItem}>Add Item</button>
+        <button className="button" onClick={handleClearItems}>Clear Items</button>
+      </div>
       <div className="items">
         {
           items.map(item => {
             return (
               <div key={"item-" + item.bodyPart + item.muscles + item.memo} className="item">
-                <h2>{item.bodyPart}</h2>
+                <h3>{item.bodyPart}</h3>
                 <p>{item.muscles}</p>
-                <p>{item.memo}</p>
+                <p>"{item.memo}"</p>
               </div>
             );
           })
         }
       </div>
+      {items.length > 0 && <div className="button-container">
+       <button className="button" onClick={handleSummarizeItems} disabled={loading}>Summarize Items</button>
+      </div>}
       <div className="notes">
         {loading && <h2>Loading...</h2>}
         {
           notes.map(note => {
             return (
               <div key={"note-" + note.id} className="note">
-                <h2>{note.patient}</h2>
-                <p>{note.note}</p>
+                <div>{note.patient}</div>
+                <div>{note.note}</div>
               </div>
             );
           })

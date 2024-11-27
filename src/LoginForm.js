@@ -4,6 +4,7 @@ import React from 'react';
 import './LoginForm.css';
 
 import GoogleIcon from '@mui/icons-material/Google';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 function LoginForm({ LoginEvent, auth }) {
 	const signInWithGoogle = () => {
