@@ -113,13 +113,7 @@ function HomepageBody({ user }) {
                 <h3>{item.bodyPart}</h3>
                 <p>{item.muscles}</p>
                 <p>"{item.memo}"</p>
-                {notes[index] && (
-                  <div>
-                    <p><strong>Summary:</strong> {notes[index].summary}</p>
-                    <p><strong>Follow-Up:</strong> {notes[index].followUp}</p>
-                  </div>
-                )}
-              </div>
+
             );
           })
         }
