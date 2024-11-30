@@ -14,6 +14,8 @@ function HomepageBody({ user }) {
   const [bodyPart, setBodyPart] = useState("");
   const [muscles, setMuscles] = useState("");
   const [memo, setMemo] = useState("");
+  //Added state for storing responses from OpenAI
+  const [responses, setResponses] = useState([]);
 
   useEffect(() => {
     axios.get(`${BASE_URL}/getNotes?owner=${user.uid}`)
@@ -28,7 +30,7 @@ function HomepageBody({ user }) {
   }, [user.uid]);
 
   const handleAddItem = () => {
-    setItems([...items, { bodyPart , muscles, memo }]);
+    setItems([...items, { bodyPart, muscles, memo }]);
     setBodyPart("");
     setMuscles("");
     setMemo("");
@@ -36,19 +38,36 @@ function HomepageBody({ user }) {
 
   const handleClearItems = () => {
     setItems([]);
+    //Clear responses when clearing items
+    setResponses([]);
   };
 
   const handleSummarizeItems = () => {
     setLoading(true);
     axios.post(`${BASE_URL}/summarizeNotes`, [...items])
       .then(response => {
-        console.log(response.data);
-        // setNotes([...notes, ...response.data]);
-        // Run save note api here
-        setLoading(false);
+        const summaries = response.data;
+
+        // Send summaries to generate treatment plans
+        axios.post(`${BASE_URL}/postTreatmentPlan`, summaries.join("\n"))
+          .then(planResponse => {
+            const plans = planResponse.data.split("\n");
+            const combinedResponses = summaries.map((summary, index) => ({
+              summary,
+              treatmentPlan: plans[index] || "No treatment plan generated.",
+            }));
+            //Save and combine responses
+            setResponses(combinedResponses);
+            setLoading(false);
+          })
+          .catch(error => {
+            console.error("Error generating treatment plans:", error);
+            setLoading(false);
+          });
       })
       .catch(error => {
-        console.error(error);
+        console.error("Error summarizing items:", error);
+        setLoading(false);
       });
   };
 
@@ -57,7 +76,7 @@ function HomepageBody({ user }) {
       <form className='items-form'>
         <label>
           Body Part
-          <select name="bodyPart" onChange={(e) => setBodyPart(e.target.value)}>
+          <select name="bodyPart" value={bodyPart} onChange={(e) => setBodyPart(e.target.value)}>
             <option value="">Select Body Part</option>
             {
               Object.keys(body).map(bodyPart => {
@@ -70,7 +89,7 @@ function HomepageBody({ user }) {
         </label>
         {bodyPart && <label>
           Muscle
-          <select name="muscles" onChange={(e) => setMuscles(e.target.value)}>
+          <select name="muscles" value={muscles} onChange={(e) => setMuscles(e.target.value)}>
             <option value="">Select Muscle</option>
             {
               body[bodyPart].map(muscle => {
@@ -82,29 +101,37 @@ function HomepageBody({ user }) {
           </select>
         </label>}
         {bodyPart && muscles && <label>
-          memo
-          <textarea name="memo" onChange={(e) => setMemo(e.target.value)} />
+          Memo
+          <textarea name="memo" value={memo} onChange={(e) => setMemo(e.target.value)} />
         </label>}
       </form>
       <div className="button-container">
         <button className="button" onClick={handleAddItem}>Add Item</button>
-        <button className="button" onClick={handleClearItems}>Clear Items</button>
+        <button className="button" onClick={handleClearItems}>Clear Items</button> {/*clear responses */}
       </div>
       <div className="items">
         {
-          items.map(item => {
+          items.map((item, index) => {
             return (
               <div key={"item-" + item.bodyPart + item.muscles + item.memo} className="item">
                 <h3>{item.bodyPart}</h3>
                 <p>{item.muscles}</p>
                 <p>"{item.memo}"</p>
+
+                // Display responses
+                {responses[index] && (
+                  <div>
+                    <p><strong>Summary:</strong> {responses[index].summary}</p>
+                    <p><strong>Treatment Plan:</strong> {responses[index].treatmentPlan}</p>
+                  </div>
+                )}
               </div>
             );
           })
         }
       </div>
       {items.length > 0 && <div className="button-container">
-       <button className="button" onClick={handleSummarizeItems} disabled={loading}>Summarize Items</button>
+        <button className="button" onClick={handleSummarizeItems} disabled={loading}>Summarize Items</button> {/* **Calls the enhanced function** */}
       </div>}
       <div className="notes">
         {loading && <h2>Loading...</h2>}
