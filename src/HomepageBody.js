@@ -14,10 +14,14 @@ function HomepageBody({ user }) {
   const [bodyPart, setBodyPart] = useState("");
   const [muscles, setMuscles] = useState("");
   const [memo, setMemo] = useState("");
-  //Added state for storing responses from OpenAI
   const [responses, setResponses] = useState([]);
 
   useEffect(() => {
+    fetchNotes();
+  }, [user.uid]);
+
+  const fetchNotes = () => {
+    setLoading(true);
     axios.get(`${BASE_URL}/getNotes?owner=${user.uid}`)
       .then(response => {
         setNotes(response.data);
@@ -27,7 +31,7 @@ function HomepageBody({ user }) {
         console.error(error);
         setLoading(false);
       });
-  }, [user.uid]);
+  };
 
   const handleAddItem = () => {
     setItems([...items, { bodyPart, muscles, memo }]);
@@ -38,37 +42,29 @@ function HomepageBody({ user }) {
 
   const handleClearItems = () => {
     setItems([]);
-    //Clear responses when clearing items
     setResponses([]);
   };
 
-  const handleSummarizeItems = () => {
+  const handleSaveNotes = () => {
     setLoading(true);
-    axios.post(`${BASE_URL}/summarizeNotes`, [...items])
-      .then(response => {
-        const summaries = response.data;
+    const savePromises = items.map(item => {
+      const notePayload = {
+        owner: user.uid,
+        patient: "John Smith",
+        item: item
+      };
+      return axios.post(`${BASE_URL}/saveNotes`, notePayload);
+    });
 
-        // Send summaries to generate treatment plans
-        axios.post(`${BASE_URL}/postTreatmentPlan`, summaries.join("\n"))
-          .then(planResponse => {
-            const plans = planResponse.data.split("\n");
-            const combinedResponses = summaries.map((summary, index) => ({
-              summary,
-              treatmentPlan: plans[index] || "No treatment plan generated.",
-            }));
-            //Save and combine responses
-            setResponses(combinedResponses);
-            setLoading(false);
-          })
-          .catch(error => {
-            console.error("Error generating treatment plans:", error);
-            setLoading(false);
-          });
+    Promise.all(savePromises)
+      .then(() => {
+        setItems([]);
+        fetchNotes();
       })
       .catch(error => {
-        console.error("Error summarizing items:", error);
-        setLoading(false);
-      });
+        console.error("Error saving notes:", error);
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -107,7 +103,7 @@ function HomepageBody({ user }) {
       </form>
       <div className="button-container">
         <button className="button" onClick={handleAddItem}>Add Item</button>
-        <button className="button" onClick={handleClearItems}>Clear Items</button> {/*clear responses */}
+        <button className="button" onClick={handleClearItems}>Clear Items</button> {/* Button to clear */}
       </div>
       <div className="items">
         {
@@ -117,12 +113,10 @@ function HomepageBody({ user }) {
                 <h3>{item.bodyPart}</h3>
                 <p>{item.muscles}</p>
                 <p>"{item.memo}"</p>
-
-                // Display responses
-                {responses[index] && (
+                {notes[index] && (
                   <div>
-                    <p><strong>Summary:</strong> {responses[index].summary}</p>
-                    <p><strong>Treatment Plan:</strong> {responses[index].treatmentPlan}</p>
+                    <p><strong>Summary:</strong> {notes[index].summary}</p>
+                    <p><strong>Follow-Up:</strong> {notes[index].followUp}</p>
                   </div>
                 )}
               </div>
@@ -131,16 +125,17 @@ function HomepageBody({ user }) {
         }
       </div>
       {items.length > 0 && <div className="button-container">
-        <button className="button" onClick={handleSummarizeItems} disabled={loading}>Summarize Items</button> {/* **Calls the enhanced function** */}
+        <button className="button" onClick={handleSaveNotes} disabled={loading}>Save Notes</button> {/* Altered button to save notes */}
       </div>}
       <div className="notes">
-        {loading && <h2>Loading...</h2>}
+        {loading && <h2>Loading...</h2>} {/* Load */}
         {
           notes.map(note => {
-            return (
+            return ( // Display
               <div key={"note-" + note.id} className="note">
-                <div>{note.patient}</div>
-                <div>{note.note}</div>
+                <h3>Patient: {note.patient}</h3>
+                <p><strong>Summary:</strong> {note.summary}</p>
+                <p><strong>Follow-Up:</strong> {note.followUp}</p>
               </div>
             );
           })
