@@ -105,28 +105,6 @@ function HomepageBody({ user }) {
         <button className="button" onClick={handleAddItem}>Add Item</button>
         <button className="button" onClick={handleClearItems}>Clear Items</button> {/* Button to clear */}
       </div>
-      <div className="items">
-        {
-          items.map((item, index) => {
-            return (
-              <div key={"item-" + item.bodyPart + item.muscles + item.memo} className="item">
-                <h3>{item.bodyPart}</h3>
-                <p>{item.muscles}</p>
-                <p>"{item.memo}"</p>
-
-            );
-          })
-        }
-      </div>
-      {items.length > 0 && <div className="button-container">
-        <button className="button" onClick={handleSaveNotes} disabled={loading}>Save Notes</button> {/* Altered button to save notes */}
-      </div>}
-      <div className="notes">
-        {loading && <h2>Loading...</h2>} {/* Load */}
-        {
-          notes.map(note => {
-            return ( // Display
-              <div key={"note-" + note.id} className="note">
                 <h3>Patient: {note.patient}</h3>
                 <p><strong>Summary:</strong> {note.summary}</p>
                 <p><strong>Follow-Up:</strong> {note.followUp}</p>
