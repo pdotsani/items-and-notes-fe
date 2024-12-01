@@ -17,7 +17,7 @@ function HomepageBody({ user }) {
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [user]);
 
   const fetchNotes = () => {
     setLoading(true);
