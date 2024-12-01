@@ -25,7 +25,6 @@ function HomepageBody({ user }) {
     setLoading(true);
     axios.get(`${BASE_URL}/getNotes?owner=${user.uid}`)
       .then(response => {
-        console.log(response.data);
         setNotes(response.data);
         setLoading(false);
       })
@@ -61,6 +60,18 @@ function HomepageBody({ user }) {
         setLoading(false);
       });
   },[user, patient, muscles, bodyPart, memo]);
+
+  const handleCopySummary = async (e) => {
+    const pTag = e.target.closest('p');
+    const textToCopy = pTag.querySelector('.summary-content').textContent;
+    await navigator.clipboard.writeText(textToCopy);
+  };
+
+  const handleCopyFollowUp = async (e) => {
+    const pTag = e.target.closest('p');
+    const textToCopy = pTag.querySelector('.follow-up-content').textContent;
+    await navigator.clipboard.writeText(textToCopy);
+  };
 
   return (
     <div>
@@ -111,8 +122,8 @@ function HomepageBody({ user }) {
             <div className="note" key={`${note.patient}-` + index}>
               <h3 className='note-patient'>{note.patient}</h3>
               <h3 className='note-date'>{getDate(note.date)}</h3>
-              <p><strong>Summary:</strong> {note.summary}</p>
-              <p><strong>Follow-Up:</strong> {note.followUp}</p>
+              <p><strong>Summary:</strong> <span className='summary-content'>{note.summary}</span> <span className='copy-button' onClick={handleCopySummary}>| copy summary |</span></p>
+              <p><strong>Follow-Up:</strong> <span className='follow-up-content'>{note.followUp}</span> <span className='copy-button' onClick={handleCopyFollowUp}>| copy follow-up |</span></p>
             </div>
             );
         })}

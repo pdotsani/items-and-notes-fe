@@ -62,5 +62,10 @@ label {
   align-items: center;
   gap: 10px;
   padding: 10px 20px;
-  border: 1px solid green;
+  border: 1px solid black;
+}
+
+.copy-button {
+  font-weight: bold;
+  cursor: pointer;
 }

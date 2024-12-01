@@ -6,7 +6,7 @@ export const getDate = (date) => {
 
   const formatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
-    month: 'long',
+    month: 'numeric',
     day: 'numeric',
     hour: 'numeric',
     minute: 'numeric'  
