@@ -40,10 +40,13 @@ function HomepageBody({ user }) {
 
   const handleAddNote = () => {
     setLoading(true);
-    axios.post(`${BASE_URL}/saveNotes`, {
-      owner: user.uid,
-      patient: patient,
-      item: { bodyPart, muscles, memo }
+    axios.post(`${BASE_URL}/saveNote`, {
+      body: JSON.stringify({
+        owner: user.uid,
+        patient: patient,
+        muscles: muscles,
+        bodyPart: bodyPart,
+      }),
     })
       .then(() => {
         handleClearNote();
