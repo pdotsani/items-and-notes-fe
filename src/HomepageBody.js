@@ -109,8 +109,8 @@ function HomepageBody({ user }) {
         {loading ? <h3>Loading...</h3> : notes.map((note, index) => {
           return (
             <div className="note" key={`${note.patient}-` + index}>
-              <h3>{note.patient}</h3>
-              <h3>{getDate(note.date)}</h3>
+              <h3 className='note-patient'>{note.patient}</h3>
+              <h3 className='note-date'>{getDate(note.date)}</h3>
               <p><strong>Summary:</strong> {note.summary}</p>
               <p><strong>Follow-Up:</strong> {note.followUp}</p>
             </div>

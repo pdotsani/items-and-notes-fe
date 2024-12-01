@@ -44,7 +44,15 @@ label {
   justify-content: center;
   gap: 10px;
   max-width: 400px;
-  margin-top: 20px;
+  margin: 25px 0;
+}
+
+.note-patient {
+  margin-bottom: 0;
+}
+
+.note-date {
+  margin-top: 0;
 }
 
 .note {
