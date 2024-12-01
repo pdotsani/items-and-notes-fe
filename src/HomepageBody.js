@@ -10,15 +10,14 @@ const BASE_URL = 'https://notes-and-items-api.uc.r.appspot.com';
 function HomepageBody({ user }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [items, setItems] = useState([]);
+  const [patient, setPatient] = useState("");
   const [bodyPart, setBodyPart] = useState("");
   const [muscles, setMuscles] = useState("");
   const [memo, setMemo] = useState("");
-  const [responses, setResponses] = useState([]);
 
   useEffect(() => {
     fetchNotes();
-  }, [user.uid]);
+  }, []);
 
   const fetchNotes = () => {
     setLoading(true);
@@ -33,43 +32,37 @@ function HomepageBody({ user }) {
       });
   };
 
-  const handleAddItem = () => {
-    setItems([...items, { bodyPart, muscles, memo }]);
-    setBodyPart("");
+  const handleClearNote = () => {
+    setPatient("");
     setMuscles("");
-    setMemo("");
+    setBodyPart("");
   };
 
-  const handleClearItems = () => {
-    setItems([]);
-    setResponses([]);
-  };
-
-  const handleSaveNotes = () => {
+  const handleAddNote = () => {
     setLoading(true);
-    const savePromises = items.map(item => {
-      const notePayload = {
-        owner: user.uid,
-        patient: "John Smith",
-        item: item
-      };
-      return axios.post(`${BASE_URL}/saveNotes`, notePayload);
-    });
-
-    Promise.all(savePromises)
+    axios.post(`${BASE_URL}/saveNotes`, {
+      owner: user.uid,
+      patient: patient,
+      item: { bodyPart, muscles, memo }
+    })
       .then(() => {
-        setItems([]);
-        fetchNotes();
+        handleClearNote();
+        setLoading(false);
       })
       .catch(error => {
-        console.error("Error saving notes:", error);
-      })
-      .finally(() => setLoading(false));
+        console.error("Error adding note:", error);
+        setLoading(false);
+      });
   };
 
   return (
     <div>
       <form className='items-form'>
+        <label>
+          Patient Name
+          <input type="text" name="patient" value={patient} onChange={(e) => setPatient(e.target.value)} />
+        </label>
+        
         <label>
           Body Part
           <select name="bodyPart" value={bodyPart} onChange={(e) => setBodyPart(e.target.value)}>
@@ -102,16 +95,18 @@ function HomepageBody({ user }) {
         </label>}
       </form>
       <div className="button-container">
-        <button className="button" onClick={handleAddItem}>Add Item</button>
-        <button className="button" onClick={handleClearItems}>Clear Items</button> {/* Button to clear */}
+        <button className="button" onClick={handleAddNote}>Add Note</button>
       </div>
-                <h3>Patient: {note.patient}</h3>
-                <p><strong>Summary:</strong> {note.summary}</p>
-                <p><strong>Follow-Up:</strong> {note.followUp}</p>
-              </div>
+      <div className="items-form">
+        {loading ? <h3>Loading...</h3> : notes.map((note, index) => {
+          return (
+            <div className="item" key={`${note.patient}-` + index}>
+              <h3>Patient: {note.patient}</h3>
+              <p><strong>Summary:</strong> {note.summary}</p>
+              <p><strong>Follow-Up:</strong> {note.followUp}</p>
+            </div>
             );
-          })
-        }
+        })}
       </div>
     </div>
   );
