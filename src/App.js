@@ -43,7 +43,7 @@ function App() {
           <div className="nav">
             <div>Welcome {user.displayName}</div>
             <div className="logout-button" onClick={logoutGoogle}>
-              <LogoutIcon />
+              <LogoutIcon fontSize="small" />
               Logout
             </div>
           </div>

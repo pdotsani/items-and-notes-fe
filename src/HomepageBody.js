@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+
+import { getDate } from './dateService';
 
 import body from './config';
 
@@ -23,6 +25,7 @@ function HomepageBody({ user }) {
     setLoading(true);
     axios.get(`${BASE_URL}/getNotes?owner=${user.uid}`)
       .then(response => {
+        console.log(response.data);
         setNotes(response.data);
         setLoading(false);
       })
@@ -36,9 +39,10 @@ function HomepageBody({ user }) {
     setPatient("");
     setMuscles("");
     setBodyPart("");
+    setMemo("");
   };
 
-  const handleAddNote = () => {
+  const handleAddNote = useCallback(() => {
     setLoading(true);
     axios.post(`${BASE_URL}/saveNote`, {
       owner: user.uid,
@@ -49,13 +53,14 @@ function HomepageBody({ user }) {
     })
       .then(() => {
         handleClearNote();
+        fetchNotes();
         setLoading(false);
       })
       .catch(error => {
         console.error("Error adding note:", error);
         setLoading(false);
       });
-  };
+  },[user, patient, muscles, bodyPart, memo]);
 
   return (
     <div>
@@ -99,11 +104,13 @@ function HomepageBody({ user }) {
       <div className="button-container">
         <button className="button" onClick={handleAddNote}>Add Note</button>
       </div>
-      <div className="items-form">
+      <h2 className='notes-header'>Notes</h2>
+      <div className="note-list">
         {loading ? <h3>Loading...</h3> : notes.map((note, index) => {
           return (
-            <div className="item" key={`${note.patient}-` + index}>
-              <h3>Patient: {note.patient}</h3>
+            <div className="note" key={`${note.patient}-` + index}>
+              <h3>{note.patient}</h3>
+              <h3>{getDate(note.date)}</h3>
               <p><strong>Summary:</strong> {note.summary}</p>
               <p><strong>Follow-Up:</strong> {note.followUp}</p>
             </div>
