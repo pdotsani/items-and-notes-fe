@@ -43,11 +43,9 @@ function HomepageBody({ user }) {
     axios.post(`${BASE_URL}/saveNote`, {
       owner: user.uid,
       patient: patient,
-      item: {
-        muscles: muscles,
-        bodyPart: bodyPart,
-        memo: memo
-      }
+      muscles: muscles,
+      bodyPart: bodyPart,
+      memo: memo
     })
       .then(() => {
         handleClearNote();
