@@ -13,6 +13,14 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #4285F4;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-transform: uppercase;
 }
 
 .google-button:hover {
@@ -22,4 +30,13 @@
 .google-icon {
   height: 40px;
   width: auto;
+}
+
+.app-title {
+  font-size: 3rem;
+  color: #4A90E2;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
 }

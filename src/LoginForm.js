@@ -4,7 +4,6 @@ import React from 'react';
 import './LoginForm.css';
 
 import GoogleIcon from '@mui/icons-material/Google';
-import EditNoteIcon from '@mui/icons-material/EditNote';
 
 function LoginForm({ LoginEvent, auth }) {
 	const signInWithGoogle = () => {
@@ -21,8 +20,9 @@ function LoginForm({ LoginEvent, auth }) {
 
 	return (
     <div className="container">
-      <div className="google-button">
-        <GoogleIcon className="google-icon" onClick={signInWithGoogle}/>
+      <h1 className="app-title">TheraNotes</h1>
+      <div className="google-button" onClick={signInWithGoogle}>
+        <GoogleIcon className="google-icon" />
         Sign in with Google
       </div>
     </div>
