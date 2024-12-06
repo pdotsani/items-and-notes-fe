@@ -69,3 +69,13 @@ label {
   font-weight: bold;
   cursor: pointer;
 }
+
+.note-delete-container {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
+.delete-icon {
+  cursor: pointer;
+}

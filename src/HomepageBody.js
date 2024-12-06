@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { getDate } from './dateService';
 
@@ -61,6 +62,19 @@ function HomepageBody({ user }) {
       });
   },[user.uid, patient, muscles, bodyPart, memo, fetchNotes]);
 
+  const handleDeleteNote = (note) => {
+    setLoading(true);
+    axios.delete(`${BASE_URL}/note?id=${note.id}`)
+      .then(() => {
+        fetchNotes();
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Error deleting note:", error);
+        setLoading(false);
+      });
+  };
+
   const handleCopySummary = async (e) => {
     const pTag = e.target.closest('p');
     const textToCopy = pTag.querySelector('.summary-content').textContent;
@@ -120,6 +134,9 @@ function HomepageBody({ user }) {
         {loading ? <h3>Loading...</h3> : notes.map((note, index) => {
           return (
             <div className="note" key={`${note.patient}-` + index}>
+              <div className="note-delete-container">
+                <DeleteIcon className='delete-icon' onClick={() => handleDeleteNote(note)} />
+              </div>
               <h3 className='note-patient'>{note.patient}</h3>
               <h3 className='note-date'>{getDate(note.date)}</h3>
               <p><strong>Summary:</strong> <span className='summary-content'>{note.summary}</span> <span className='copy-button' onClick={handleCopySummary}>| copy summary |</span></p>
