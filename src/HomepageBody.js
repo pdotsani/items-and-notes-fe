@@ -59,7 +59,7 @@ function HomepageBody({ user }) {
         console.error("Error adding note:", error);
         setLoading(false);
       });
-  },[user, patient, muscles, bodyPart, memo]);
+  },[user.uid, patient, muscles, bodyPart, memo, fetchNotes]);
 
   const handleCopySummary = async (e) => {
     const pTag = e.target.closest('p');
